@@ -1,0 +1,101 @@
+:root {
+  --bg: #0f1115;
+  --panel: #1a1d24;
+  --text: #e6e6e6;
+  --muted: #8a8f99;
+  --accent: #7c5cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.card {
+  width: min(640px, 92vw);
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 28px;
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  color: var(--muted);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  font: inherit;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid #2a2f3a;
+  background: #22262f;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+button.play {
+  background: #2ecc71;
+  border-color: transparent;
+  color: #052b14;
+  font-weight: 600;
+}
+
+button.play:disabled {
+  opacity: 0.4;
+}
+
+.status {
+  color: var(--muted);
+  min-height: 1.2em;
+  margin: 16px 0 8px;
+}
+
+pre {
+  margin: 0;
+  padding: 16px;
+  background: #0c0e12;
+  border-radius: 10px;
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+code {
+  font-family: inherit;
+}
