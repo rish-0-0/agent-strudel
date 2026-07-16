@@ -1,43 +1,40 @@
-import * as strudel from "https://cdn.jsdelivr.net/npm/@strudel/web@1.3.0/dist/index.mjs";
-
-const DOUGH = "https://raw.githubusercontent.com/felixroos/dough-samples/main";
-const UZU = "https://raw.githubusercontent.com/tidalcycles/uzu-drumkit/main";
-
 const worker = new Worker("worker.js", { type: "module" });
 
 const generateBtn = document.getElementById("generate");
 const playBtn = document.getElementById("play");
 const stopBtn = document.getElementById("stop");
 const statusEl = document.getElementById("status");
-const codeEl = document.getElementById("code");
+const editor = document.getElementById("editor");
 
-const strudelReady = strudel.initStrudel({
-  prebake: async () => {
-    await Promise.all([
-      strudel.samples(`${UZU}/strudel.json`),
-      strudel.samples(`${DOUGH}/Dirt-Samples.json`),
-      strudel.samples(`${DOUGH}/tidal-drum-machines.json`),
-      strudel.samples(`${DOUGH}/piano.json`),
-    ]);
-  },
-});
 let generating = false;
-let currentCode = "";
 
 const setStatus = (text) => { statusEl.textContent = text; };
 
-worker.onmessage = async ({ data }) => {
+const setEditorCode = (code) => {
+  editor.code = code;
+  editor.editor?.setCode(code);
+};
+
+const whenEditorReady = (cb) => {
+  if (editor.editor) return cb();
+  setTimeout(() => whenEditorReady(cb), 50);
+};
+
+whenEditorReady(() => {
+  playBtn.disabled = false;
+  stopBtn.disabled = false;
+});
+
+worker.onmessage = ({ data }) => {
   if (data.type === "status") {
     const ready = data.status === "ready";
     generateBtn.disabled = !ready || generating;
     setStatus(ready ? "Ready" : (data.detail ?? "Loading model…"));
   } else if (data.type === "result") {
-    currentCode = data.code;
-    codeEl.textContent = currentCode;
-    playBtn.disabled = false;
+    setEditorCode(data.code);
     generating = false;
     generateBtn.disabled = false;
-    setStatus("Ready to play");
+    setStatus("Generated — press Play");
   } else if (data.type === "error") {
     setStatus("Error: " + data.message);
     generating = false;
@@ -53,23 +50,14 @@ generateBtn.addEventListener("click", () => {
   worker.postMessage({ type: "generate", prompt: "" });
 });
 
-playBtn.addEventListener("click", async () => {
-  if (!currentCode) return;
-  playBtn.disabled = true;
-  setStatus("Loading audio…");
-  try {
-    await strudelReady;
-    strudel.getAudioContext?.()?.resume?.();
-    await strudel.evaluate(currentCode);
-    setStatus("Playing");
-  } catch (err) {
-    setStatus("Playback error: " + err.message);
-  } finally {
-    playBtn.disabled = false;
-  }
+playBtn.addEventListener("click", () => {
+  if (!editor.editor) return;
+  editor.editor.evaluate();
+  setStatus("Playing");
 });
 
 stopBtn.addEventListener("click", () => {
-  strudel.hush();
+  if (!editor.editor) return;
+  editor.editor.stop();
   setStatus("Stopped");
 });

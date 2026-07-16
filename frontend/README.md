@@ -1,6 +1,8 @@
 # Agent DJ — Frontend
 
-Click **Generate** to produce Strudel live-coding code, then click **Play** to hear it. Playback is always user-initiated (no autoplay), so there are no browser audio restrictions to fight.
+Click **Generate** to produce Strudel live-coding code, then press **Play** inside the editor to hear it. Playback is always user-initiated (no autoplay).
+
+The editor is the full Strudel REPL (`@strudel/repl`'s `<strudel-editor>` web component), so it loads the complete default sample/synth bank set on its own — no manual sample loading, and AI-generated patterns that use any standard sound will just work.
 
 For now the "model" is a stub that picks a random pattern (see `model.js`). The rest of the pipeline is real and ready for the trained model.
 
@@ -16,9 +18,9 @@ then open http://localhost:8000
 
 ## Files
 
-- `index.html` — the UI: Generate, Play, and Stop buttons, a status line, and a panel showing the generated code.
-- `app.js` — main thread. Initialises Strudel, talks to the worker, shows the result, and plays it on demand.
-- `worker.js` — runs the model off the main thread so generation never blocks audio/UI. Receives `generate` requests, replies with code.
+- `index.html` — the UI: a Generate button, a status line, and the `<strudel-editor>` (code + Play/Stop/eval).
+- `app.js` — main thread. Talks to the worker, feeds the generated code to the editor. No audio/sample code — the editor handles all of that.
+- `worker.js` — runs the model off the main thread so generation never blocks the UI. Receives `generate` requests, replies with code.
 - `model.js` — THE SWAP POINT. Exports `generate(prompt) -> Promise<string>`. Today it returns a random hardcoded pattern. Replace its body with a Transformers.js call to use the trained model.
 - `styles.css` — minimal dark styling.
 
@@ -28,13 +30,15 @@ then open http://localhost:8000
         |
     app.js  --{generate}-->  worker.js  -->  model.js (stub / future model)
         |
-    app.js  <--{result, code}--  worker.js      (code shown; nothing plays yet)
-
-    [Play click]
+    app.js  <--{result, code}--  worker.js
         |
-    app.js  -->  resume AudioContext + evaluate(code)  -->  Strudel WebAudio  -->  speakers
+    app.js  -->  editor.code = code / editor.editor.setCode(code)
 
-Strudel itself is loaded from a CDN; there is no build step.
+    [Play click (in the editor)]
+        |
+    <strudel-editor>  -->  evaluate(code)  -->  WebAudio  -->  speakers
+
+The editor loads `@strudel/repl` from a CDN; there is no build step.
 
 ## Plugging in the real model
 
@@ -43,17 +47,16 @@ Strudel itself is loaded from a CDN; there is no build step.
        import { pipeline } from "https://esm.sh/@huggingface/transformers";
 
 2. Replace `generate()` in `model.js` with a call that runs the model and returns the decoded Strudel string.
-3. Optionally validate the output (the `try/catch` around `evaluate` in `app.js` already surfaces broken code) and regenerate on failure.
+3. AI-generated code will sometimes be invalid. A validation/regeneration loop (try-transpile before setting code; retry on failure) should be added at that point.
 
 Nothing else changes — the worker / main-thread boundary already isolates inference.
 
-## Why `@strudel/web` and not `@strudel/repl`
+## Why `@strudel/repl` (and not `@strudel/web`)
 
-`@strudel/web` is the lean "evaluate-and-play" bundle — exactly what a few-button app needs. `@strudel/repl` adds the full CodeMirror editor + visuals as a `<strudel-editor>` web component; it's the upgrade path if you later want users to see/edit the code inline. To switch: load `https://unpkg.com/@strudel/repl@1.3.0`, drop in `<strudel-editor code="...">`, and drive it via `.editor.setCode()` / `.editor.evaluate()`.
+`@strudel/repl`'s `<strudel-editor>` runs the full Strudel prebake on connect, which loads every default sample bank (uzu-drumkit, Dirt-Samples, tidal-drum-machines, piano, vcsl, mridangam), soundfonts, and synth sounds. That breadth matters once the model emits arbitrary code — `@strudel/web` registers synths only and would need a hand-maintained bank list that misses sounds. The tradeoff is the editor UI, which we want anyway to show the generated code.
 
 ## Notes
 
-- Audio resumes on the Play click (an explicit user gesture), so autoplay restrictions don't apply.
-- Drum samples (`bd`, `sd`, `hh`, `cp`, …) aren't bundled with `@strudel/web` — its default prebake registers synths only. `app.js` passes a `prebake` to `initStrudel()` that loads sample banks from GitHub (same sources `@strudel/repl` uses): the classic drum hits come from `tidalcycles/uzu-drumkit` (`strudel.json`); `felixroos/dough-samples` adds Dirt-Samples, drum machines, and piano. First Play waits for these to finish loading.
-- Strudel is loaded from jsDelivr's **prebuilt** `dist/index.mjs`, which inlines the AudioWorklet as a Blob URL. Do **not** swap this for `esm.sh/@strudel/web` — esm.sh rebuilds from source and drops the worklet, leaving you with no sound. If jsDelivr misbehaves, the unpkg global build (`<script src="https://unpkg.com/@strudel/web@1.3.0">`, then `initStrudel` / `evaluate` / `hush` as globals) is the fallback.
+- Audio resumes on the editor's Play click (an explicit user gesture), so autoplay restrictions don't apply.
+- `@strudel/repl` is loaded via `<script defer src="https://unpkg.com/@strudel/repl@1.3.0">`, which auto-registers the `<strudel-editor>` custom element. If audio is silent, fall back to the jsDelivr prebuilt ESM: `import "https://cdn.jsdelivr.net/npm/@strudel/repl@1.3.0/dist/index.mjs"` (same worklet-inlining fix that `@strudel/web` needed).
 - The `@strudel/*` packages are AGPL-3.0; fine for local use, but review it if you ever distribute or host the app.
