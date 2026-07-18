@@ -1,5 +1,7 @@
 # Agent DJ
 
+**Live: https://rishabh-anand.com/agent-strudel/**
+
 A fine-tuned **SmolLM2-135M-Instruct** that generates [Strudel](https://strudel.cc) live-coding patterns from a text description, and runs **in-browser via WASM** — no server, no GPU, just a 130 MB quantized model loaded by transformers.js.
 
 The full loop lives in this repo: an agent generates + validates training data, a fine-tuner trains the model, a GLM-5.2 evaluator judges quality, and the result is exported to ONNX and served to the browser.
