@@ -43,6 +43,21 @@ h1 {
   gap: 12px;
 }
 
+.prompt {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a2f3a;
+  background: #22262f;
+  color: var(--text);
+}
+
+.prompt::placeholder {
+  color: var(--muted);
+}
+
 button {
   font: inherit;
   padding: 12px 18px;
@@ -81,10 +96,50 @@ button.play:disabled {
 .status {
   color: var(--muted);
   min-height: 1.2em;
-  margin: 16px 0 8px;
+  margin: 6px 0 2px;
 }
 
 strudel-editor {
   display: block;
   width: 100%;
+  min-height: 220px;
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    margin-bottom: 18px;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .prompt {
+    flex: 1 1 100%;
+  }
+
+  .controls button {
+    flex: 1 1 0;
+    padding: 12px 8px;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .controls button svg {
+    display: none;
+  }
+
+  strudel-editor {
+    min-height: 180px;
+  }
 }

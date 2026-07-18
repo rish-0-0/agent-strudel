@@ -1,6 +1,12 @@
-import { generate } from "./model.js";
+import { init, generate } from "./model.js";
 
-postMessage({ type: "status", status: "ready" });
+init((status) => {
+  postMessage({
+    type: "status",
+    status: status === "ready" ? "ready" : "loading",
+    detail: status,
+  });
+});
 
 onmessage = async ({ data }) => {
   if (data.type !== "generate") return;

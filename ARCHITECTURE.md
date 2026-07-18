@@ -31,4 +31,7 @@ The context will keep growing and to avoid that there will be a summary step eve
 
 I think a good limit on the number of generations would be 2000 and for fine tuning we can use 80% and the remaining 20% can be used to self train the model.
 
+## Fine tuning agent
+
+Another folder in the root level for this agent. We are going to be fine tuning SmolLM2-135M Model and experimenting with how well it can run on the web and generate strudel code.
 

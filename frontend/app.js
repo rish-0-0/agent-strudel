@@ -5,6 +5,7 @@ const playBtn = document.getElementById("play");
 const stopBtn = document.getElementById("stop");
 const statusEl = document.getElementById("status");
 const editor = document.getElementById("editor");
+const promptInput = document.getElementById("prompt");
 
 let generating = false;
 
@@ -47,7 +48,11 @@ generateBtn.addEventListener("click", () => {
   generating = true;
   generateBtn.disabled = true;
   setStatus("Generating…");
-  worker.postMessage({ type: "generate", prompt: "" });
+  worker.postMessage({ type: "generate", prompt: promptInput.value });
+});
+
+promptInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !generateBtn.disabled) generateBtn.click();
 });
 
 playBtn.addEventListener("click", () => {

@@ -6,7 +6,9 @@ Run `uv run python training-data-gen/main.py`
 
 ## Once data is available in data/ directory
 
-Run `uv run python fine-tuner/main.py`
+Run `uv run --project fine-tuner python fine-tuner/main.py`
+
+(Smoke test: append `--epochs 1 --max-train-samples 4 --batch-size 2`)
 
 ## Generate WASM with the new model weights.
 

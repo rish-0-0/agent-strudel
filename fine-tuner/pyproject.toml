@@ -1,0 +1,17 @@
+[project]
+name = "fine-tuner"
+version = "0.1.0"
+description = "Fine-tune SmolLM2-135M-Instruct on Strudel snippets"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "torch>=2.5",
+    "transformers>=4.46",
+    "trl>=0.12",
+    "datasets>=3.0",
+    "accelerate>=1.0",
+    "langchain>=0.3",
+    "langchain-openai>=0.3",
+    "python-dotenv>=1.0",
+    "optimum[onnx]>=1.23",
+    "onnxruntime>=1.20",
+]

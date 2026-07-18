@@ -9,3 +9,16 @@ wheels/
 # Virtual environments
 .venv
 node_modules
+
+# Generated training data
+data/
+
+# Fine-tuner outputs
+fine-tuner/out
+
+# Secrets
+.env
+
+out_*
+
+onnx*
