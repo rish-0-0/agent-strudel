@@ -6,6 +6,29 @@ A fine-tuned **SmolLM2-135M-Instruct** that generates [Strudel](https://strudel.
 
 The full loop lives in this repo: an agent generates + validates training data, a fine-tuner trains the model, a GLM-5.2 evaluator judges quality, and the result is exported to ONNX and served to the browser.
 
+## Genres
+
+The deployed model (`out_m402`) was trained on 402 Strudel snippets spanning 45 genres. It generates most reliably in the well-represented ones (≥ 5 samples):
+
+| Genre | Samples |
+|---|---|
+| deep-house | 87 |
+| downtempo | 63 |
+| afrobeat | 45 |
+| techno | 37 |
+| jazz-house | 29 |
+| funk | 20 |
+| jazz | 15 |
+| lofi-hiphop | 14 |
+| breakbeat | 12 |
+| fusion | 11 |
+| house | 9 |
+| ambient | 8 |
+| synthwave | 6 |
+| dub | 5 |
+
+A long tail of 31 niche genres (1–4 samples each) — e.g. tech-house, world-fusion, jazz-fusion, acid-techno, gamelan-ambient, klezmer-fusion, bluegrass-fusion, afro-cuban-jazz, shoegaze, dnb, trance, metal, baroque-fusion, cinematic-ambient — is also in the training data. Try them, but expect more hit-or-miss results since the model saw few examples.
+
 ## Why SmolLM2-135M-Instruct?
 
 There's no deep science here. The choice was driven by one constraint: **I don't have infinite money.**
