@@ -1,8 +1,9 @@
 import { pipeline, env } from "https://esm.sh/@huggingface/transformers";
 
-env.allowLocalModels = true;
+env.allowLocalModels = false;
+env.allowRemoteModels = true;
 
-const MODEL_ID = "smollm2-strudel";
+const MODEL_ID = "rish-0-0/SmolLM2-135M-Strudel-ONNX";
 const SYSTEM_PROMPT =
   "You are a Strudel live-coding assistant. Given a description of a groove, " +
   "write complete, valid, balanced Strudel (strudel.cc) code that produces it. " +

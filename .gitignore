@@ -16,6 +16,9 @@ data/
 # Fine-tuner outputs
 fine-tuner/out
 
+# Local model artifacts (served from HF Hub, not bundled)
+frontend/models/
+
 # Secrets
 .env
 

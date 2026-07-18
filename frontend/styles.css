@@ -105,6 +105,17 @@ strudel-editor {
   min-height: 220px;
 }
 
+.source {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.source a {
+  color: var(--muted);
+  text-decoration: underline;
+}
+
 @media (max-width: 560px) {
   .card {
     padding: 20px;
